@@ -3,6 +3,8 @@ import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import { useAuthtorize } from "../../api/hooks/authHooks";
+import { useChangeInputHandler } from "../../api/hooks/eventHooks";
 
 const paperStyle = {
     padding: 20,
@@ -10,9 +12,13 @@ const paperStyle = {
     width: 350,
     margin: "0 auto",
 };
+
 const btnstyle = { margin: "8px 0" };
 
 export default function AuthForm() {
+    const authtorization = useAuthtorize();
+    const inputHandler = useChangeInputHandler('');
+    
     return (
         <div
             style={{
@@ -33,6 +39,8 @@ export default function AuthForm() {
                         placeholder="Введите имя"
                         fullWidth
                         required
+                        name="login"
+                        onChange={(event)=>{inputHandler.setField(event)}}
                     />
                     <TextField
                         label="Пароль"
@@ -40,6 +48,8 @@ export default function AuthForm() {
                         type="password"
                         fullWidth
                         required
+                        name="password"
+                        onChange={(event)=>{inputHandler.setField(event)}}
                     />
                     <Button
                         type="submit"
@@ -47,6 +57,7 @@ export default function AuthForm() {
                         variant="contained"
                         style={btnstyle}
                         fullWidth
+                        onClick={()=>{authtorization.auth(inputHandler.state.login, inputHandler.state.password)}}
                     >
                         Войти
                     </Button>

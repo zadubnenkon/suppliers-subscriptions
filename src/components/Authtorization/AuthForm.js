@@ -39,7 +39,7 @@ export default function AuthForm() {
                         <h2>Авторизация</h2>
                     </Grid>
                     <TextField
-                     error={errLogin != '' && true}
+                     error={errLogin !== '' && true}
                         style={{ marginBottom: "10px" }}
                         label="Логин"
                         placeholder="Введите имя"
@@ -50,7 +50,7 @@ export default function AuthForm() {
                         helperText={errLogin}
                     />
                     <TextField
-                        error={errPassword != '' && true}
+                        error={errPassword !== '' && true}
                         label="Пароль"
                         placeholder="Введите пароль"
                         type="password"

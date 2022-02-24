@@ -16,14 +16,27 @@ export default class RestApi {
         };
     }
 
-     sendRequest = async (method, data, action) => {
+    sendRequest = async (method, action, data = null) => {
         let result = {};
-        await axios({
+        if (this.token !== "") {
+            this.headers = {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+                "Authorization": "Bearer " + this.token,
+            };
+        }
+
+        const axiosObj = {
             method: method,
             url: this.url + action,
-            data: data,
             headers: this.headers,
-        })
+        };
+
+        if(data != null) {
+            axiosObj.data = data;
+        }
+
+        await axios(axiosObj)
             .then(function (response) {
                 result = response;
             })
@@ -36,8 +49,8 @@ export default class RestApi {
     auth = async (login, password) => {
         const result = await this.sendRequest(
             "post",
-            { username: login, password: password },
-            "auth"
+            "auth",
+            { username: login, password: password }
         );
 
         if (result.status === this.statusPostOk) {
@@ -48,8 +61,12 @@ export default class RestApi {
         if (result.status === this.statusInternalError) {
             return this.getMessageInternalError();
         }
-        
+
         return result;
+    };
+
+    getCategories = async () => {
+       return await this.sendRequest("get", "categories");
     };
 
     getMessageInternalError = () => {

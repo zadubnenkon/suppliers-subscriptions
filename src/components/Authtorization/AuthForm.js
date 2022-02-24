@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 import { useAuthtorize } from "../../api/hooks/authHooks";
 import { useChangeInputHandler } from "../../api/hooks/eventHooks";
 import { useGetAuthManager } from "../../api/hooks/authHooks";
+import FormHelperText from '@mui/material/FormHelperText';
 
 const paperStyle = {
     padding: 20,
@@ -69,6 +70,7 @@ export default function AuthForm() {
                     >
                         Войти
                     </Button>
+                    <FormHelperText style={{color:'red'}}>{authManager.errorAuth}</FormHelperText>
                 </Paper>
             </Grid>
         </div>

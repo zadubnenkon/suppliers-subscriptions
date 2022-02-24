@@ -56,7 +56,7 @@ export default class RestApi {
         const errorObject = {
             message:
                 "Внутренняя ошибка сервера. Не удалось обработать данные. Проверьте вводные данные и попробуйте еще раз.",
-            statusCode: 500,
+            status: 500,
         };
         return errorObject;
     };

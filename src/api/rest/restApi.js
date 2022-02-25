@@ -25,7 +25,7 @@ export default class RestApi {
                 Authorization: "Bearer " + this.token,
             };
         }
-
+        
         const axiosObj = {
             method: method,
             url: this.url + action,
@@ -79,7 +79,7 @@ export default class RestApi {
     };
 
     deleteCategory = async (id) => {
-        const result = await this.sendRequest("delete", "categories", { id });
+        const result = await this.sendRequest("delete", "categories/?id=" + id);
         if(result.status === this.statusGetOk) {
             return result;
         }

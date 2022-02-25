@@ -19,8 +19,6 @@ export default function CategoriesList() {
         return newCat;
     });
 
-    console.log( categoriesList);
-
     const columns = [
         { field: "id", headerName: "ID", width: 70 },
         /*{ field: "parentId", headerName: "Родительский ID", width: 130 },*/

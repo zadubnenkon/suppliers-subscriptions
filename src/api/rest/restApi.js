@@ -1,14 +1,14 @@
 const axios = require("axios");
 
 export default class RestApi {
-    constructor() {
+    constructor(token = "") {
         this.statusPostOk = 201;
         this.statusGetOk = 200;
         this.statusInternalError = 500;
         this.statusBadRequest = 400;
         this.statusUnAuthorized = 401;
 
-        this.token = "";
+        this.token = token;
         this.url = "https://ut-suppliers-subscriptions.herokuapp.com/";
         this.headers = {
             "Content-Type": "application/json",
@@ -22,7 +22,7 @@ export default class RestApi {
             this.headers = {
                 "Content-Type": "application/json",
                 "Access-Control-Allow-Origin": "*",
-                "Authorization": "Bearer " + this.token,
+                Authorization: "Bearer " + this.token,
             };
         }
 
@@ -32,7 +32,7 @@ export default class RestApi {
             headers: this.headers,
         };
 
-        if(data != null) {
+        if (data != null) {
             axiosObj.data = data;
         }
 
@@ -47,34 +47,48 @@ export default class RestApi {
     };
 
     auth = async (login, password) => {
-        const result = await this.sendRequest(
-            "post",
-            "auth",
-            { username: login, password: password }
-        );
+        const result = await this.sendRequest("post", "auth", {
+            username: login,
+            password: password,
+        });
 
         if (result.status === this.statusPostOk) {
             this.token = result.data.token;
             return this.token;
         }
-
-        if (result.status === this.statusInternalError) {
-            return this.getMessageInternalError();
-        }
-
-        return result;
+       
+        return this.getMessageInternalError(result);
     };
 
     getCategories = async () => {
-       return await this.sendRequest("get", "categories");
+        return await this.sendRequest("get", "categories");
     };
 
-    getMessageInternalError = () => {
+    addCategory = async (name, code) => {
+        const result = await this.sendRequest("post", "categories", {
+            name,
+            code,
+            parentId: null,
+        });
+
+        if (result.status === this.statusPostOk) {
+            return result.data.id;
+        }
+
+        return this.getMessageInternalError(result);
+    };
+
+    getMessageInternalError = (data) => {
         const errorObject = {
             message:
                 "Внутренняя ошибка сервера. Не удалось обработать данные. Проверьте вводные данные и попробуйте еще раз.",
             status: 500,
         };
-        return errorObject;
+
+        if (data.status === this.statusInternalError) {
+            return errorObject;
+        }
+
+        return data;
     };
 }

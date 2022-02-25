@@ -18,7 +18,6 @@ export const useAuthtorize = () => {
         if (typeof result === "string") {
             dispatch(setTokenAction(result));
             const categories = await restService.getCategories();
-            console.log(categories);
             dispatch(setCategoriesList(categories.data));
         } else {
             switch(result.status) {
@@ -46,4 +45,8 @@ export const useAuthtorize = () => {
 
 export const useGetAuthManager = () => {
     return useSelector((state) => state.authManager);
+}
+
+export const useGetTokenAuthManager = () => {
+    return useSelector((state) => state.authManager.token);
 }

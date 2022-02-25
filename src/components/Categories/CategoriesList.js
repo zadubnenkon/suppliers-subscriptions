@@ -2,15 +2,14 @@ import React from "react";
 import { useGetCategories } from "../../api/hooks/categoriesHooks";
 import { DataGrid } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
-import DeleteIcon from '@mui/icons-material/Delete';
-import { makeStyles } from '@mui/material/styles';
-
-
-
-
+import DeleteIcon from "@mui/icons-material/Delete";
+import { setOpenEditModal } from "../../redux/actions/appAction";
+import { useDispatch } from "react-redux";
+import EditModal from "../../components/Modals/EditModal";
 
 export default function CategoriesList() {
     const getCategories = useGetCategories();
+    const dispatch = useDispatch();
 
     const columns = [
         { field: "id", headerName: "ID", width: 70 },
@@ -23,24 +22,23 @@ export default function CategoriesList() {
             width: 250,
             renderCell: () => (
                 <strong>
-                     <Button
+                    <Button
                         variant="contained"
                         color="primary"
                         size="small"
-                        style={{marginRight:'2px'}}
+                        style={{ marginRight: "2px" }}
                     >
-                       Изменить
+                        Изменить
                     </Button>
                     <Button
                         variant="contained"
                         style={{
                             backgroundColor: "#ff007b",
                         }}
-                    
                         startIcon={<DeleteIcon />}
                         size="small"
                     >
-                       Удалить
+                        Удалить
                     </Button>
                 </strong>
             ),
@@ -56,6 +54,17 @@ export default function CategoriesList() {
             }}
         >
             <div style={{ height: 400, width: "70%" }}>
+           
+                <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    style={{ marginBottom:'10px' }}
+                    onClick={()=>{dispatch(setOpenEditModal(true))}}
+                >
+                    + Добавить категорию
+                </Button>
+               
                 <DataGrid
                     rows={getCategories}
                     columns={columns}
@@ -63,6 +72,7 @@ export default function CategoriesList() {
                     rowsPerPageOptions={[5]}
                     checkboxSelection
                 />
+                <EditModal props={'Добавить категорию'}></EditModal>
             </div>
         </div>
     );

@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 import { useAuthtorize } from "../../api/hooks/authHooks";
 import { useChangeInputHandler } from "../../api/hooks/eventHooks";
 import { useGetAuthManager } from "../../api/hooks/authHooks";
-import FormHelperText from '@mui/material/FormHelperText';
+import FormHelperText from "@mui/material/FormHelperText";
 
 const paperStyle = {
     padding: 20,
@@ -19,11 +19,19 @@ const btnstyle = { margin: "8px 0" };
 
 export default function AuthForm() {
     const authtorization = useAuthtorize();
-    const inputHandler = useChangeInputHandler('');
+    const inputHandler = useChangeInputHandler("");
     const authManager = useGetAuthManager();
     const errPassword = authManager.errorPassword;
-    const errLogin =  authManager.errorLogin;
-    
+    const errLogin = authManager.errorLogin;
+
+    const submitHandler = (event) => {
+        event.preventDefault();
+        authtorization.auth(
+            inputHandler.state.login,
+            inputHandler.state.password
+        );
+    };
+
     return (
         <div
             style={{
@@ -32,45 +40,51 @@ export default function AuthForm() {
                 marginTop: "150px",
             }}
         >
-            
             <Grid>
                 <Paper style={paperStyle}>
                     <Grid align="center" style={{ marginTop: "15px" }}>
                         <h2>Авторизация</h2>
                     </Grid>
-                    <TextField
-                     error={errLogin !== '' && true}
-                        style={{ marginBottom: "10px" }}
-                        label="Логин"
-                        placeholder="Введите имя"
-                        fullWidth
-                        required
-                        name="login"
-                        onChange={(event)=>{inputHandler.setField(event)}}
-                        helperText={errLogin}
-                    />
-                    <TextField
-                        error={errPassword !== '' && true}
-                        label="Пароль"
-                        placeholder="Введите пароль"
-                        type="password"
-                        fullWidth
-                        required
-                        name="password"
-                        onChange={(event)=>{inputHandler.setField(event)}}
-                        helperText={errPassword}
-                    />
-                    <Button
-                        type="submit"
-                        color="primary"
-                        variant="contained"
-                        style={btnstyle}
-                        fullWidth
-                        onClick={()=>{authtorization.auth(inputHandler.state.login, inputHandler.state.password)}}
-                    >
-                        Войти
-                    </Button>
-                    <FormHelperText style={{color:'red'}}>{authManager.errorAuth}</FormHelperText>
+                    <form onSubmit={submitHandler}>
+                        <TextField
+                            error={errLogin !== "" && true}
+                            style={{ marginBottom: "10px" }}
+                            label="Логин"
+                            placeholder="Введите имя"
+                            fullWidth
+                            required
+                            name="login"
+                            onChange={(event) => {
+                                inputHandler.setField(event);
+                            }}
+                            helperText={errLogin}
+                        />
+                        <TextField
+                            error={errPassword !== "" && true}
+                            label="Пароль"
+                            placeholder="Введите пароль"
+                            type="password"
+                            fullWidth
+                            required
+                            name="password"
+                            onChange={(event) => {
+                                inputHandler.setField(event);
+                            }}
+                            helperText={errPassword}
+                        />
+                        <Button
+                            type="submit"
+                            color="primary"
+                            variant="contained"
+                            style={btnstyle}
+                            fullWidth
+                        >
+                            Войти
+                        </Button>
+                    </form>
+                    <FormHelperText style={{ color: "red" }}>
+                        {authManager.errorAuth}
+                    </FormHelperText>
                 </Paper>
             </Grid>
         </div>

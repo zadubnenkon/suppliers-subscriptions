@@ -1,6 +1,9 @@
 import { useSelector, useDispatch } from "react-redux";
 import RestApi from "../rest/restApi";
-import { addCategory } from "../../redux/actions/categoriesAction";
+import {
+    addCategory,
+    setCategoriesList,
+} from "../../redux/actions/categoriesAction";
 import { useGetTokenAuthManager } from "./authHooks";
 import { setCategoryError } from "../../redux/actions/categoriesAction";
 import { setCategoryCodeError } from "../../redux/actions/categoriesAction";
@@ -68,6 +71,26 @@ export const useAddCategory = () => {
     };
 };
 
+export const useRemoveCategory = () => {
+    const token = useGetTokenAuthManager();
+    const restService = new RestApi(token);
+    const categories = useGetCategories();
+    const dispatch = useDispatch();
+
+    const remove = (id) => {
+        const categoriesList = [];
+        categories.forEach((category) => {
+            if (category.id !== id) {
+                categoriesList.push(category);
+            }
+        });
+        dispatch(setCategoriesList(categoriesList));
+        restService.deleteCategory(id);
+    };
+
+    return { remove };
+};
+
 export const useCloseErrors = () => {
     const dispatch = useDispatch();
     const close = () => {
@@ -77,5 +100,5 @@ export const useCloseErrors = () => {
         dispatch(setCategoryError(""));
     };
 
-    return {close};
+    return { close };
 };

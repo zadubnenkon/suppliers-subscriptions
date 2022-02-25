@@ -56,7 +56,7 @@ export default class RestApi {
             this.token = result.data.token;
             return this.token;
         }
-       
+
         return this.getMessageInternalError(result);
     };
 
@@ -76,6 +76,14 @@ export default class RestApi {
         }
 
         return this.getMessageInternalError(result);
+    };
+
+    deleteCategory = async (id) => {
+        const result = await this.sendRequest("delete", "categories", { id });
+        if(result.status === this.statusGetOk) {
+            return result;
+        }
+        return false;
     };
 
     getMessageInternalError = (data) => {

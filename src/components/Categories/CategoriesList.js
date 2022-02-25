@@ -6,10 +6,20 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { setOpenEditModal } from "../../redux/actions/appAction";
 import { useDispatch } from "react-redux";
 import EditModal from "../../components/Modals/EditModal";
+import { useRemoveCategory } from "../../api/hooks/categoriesHooks";
 
 export default function CategoriesList() {
+    const category = useRemoveCategory();
     const getCategories = useGetCategories();
     const dispatch = useDispatch();
+    
+    const categoriesList = getCategories.map((category) => {
+        const newCat = category;
+        newCat.action = category.id;
+        return newCat;
+    });
+
+    console.log( categoriesList);
 
     const columns = [
         { field: "id", headerName: "ID", width: 70 },
@@ -17,10 +27,10 @@ export default function CategoriesList() {
         { field: "code", headerName: "Код", width: 120 },
         { field: "name", headerName: "Название", width: 675 },
         {
-            field: "delete",
+            field: "action",
             headerName: "Удалить",
             width: 250,
-            renderCell: () => (
+            renderCell: (params) => (
                 <strong>
                     <Button
                         variant="contained"
@@ -37,6 +47,7 @@ export default function CategoriesList() {
                         }}
                         startIcon={<DeleteIcon />}
                         size="small"
+                        onClick={()=>{category.remove(params.id)}}
                     >
                         Удалить
                     </Button>
@@ -54,25 +65,26 @@ export default function CategoriesList() {
             }}
         >
             <div style={{ height: 400, width: "70%" }}>
-           
                 <Button
                     variant="contained"
                     color="primary"
                     size="small"
-                    style={{ marginBottom:'10px' }}
-                    onClick={()=>{dispatch(setOpenEditModal(true))}}
+                    style={{ marginBottom: "10px" }}
+                    onClick={() => {
+                        dispatch(setOpenEditModal(true));
+                    }}
                 >
                     + Добавить категорию
                 </Button>
-               
+
                 <DataGrid
-                    rows={getCategories}
+                    rows={categoriesList}
                     columns={columns}
                     pageSize={5}
                     rowsPerPageOptions={[5]}
                     checkboxSelection
                 />
-                <EditModal props={'Добавить категорию'}></EditModal>
+                <EditModal props={"Добавить категорию"}></EditModal>
             </div>
         </div>
     );

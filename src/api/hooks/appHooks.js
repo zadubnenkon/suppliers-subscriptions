@@ -7,6 +7,7 @@ import { useGetCategoryById } from "./categoriesHooks";
 import { setOpenSnackBar } from "../../redux/actions/appAction";
 import { setCategoryError } from "../../redux/actions/categoriesAction";
 import { toggleBackDrop } from "../../redux/actions/appAction";
+import { setSelectedCategory } from "../../redux/actions/categoriesAction";
 
 export const useGetAppManager = () => {
     return useSelector((state) => state.appManager);
@@ -20,6 +21,7 @@ export const useSetModal = () => {
     const set = async (isEdit = false, id = null) => {
         let result = false;
         backDrop.toggle(true);
+        dispatch(setSelectedCategory( {id:0, name:'', code:'', parentId: null}));
         dispatch(setCategoryId(id));
         if (id != null) {
             result = await category.get(id);

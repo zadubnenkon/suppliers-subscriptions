@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useGetCategoryManager } from "../../api/hooks/categoriesHooks";
 
-export const useChangeInputHandler = (event) => {
+export const useChangeInputHandler = () => {
     const currentState = useSelector((state) => state);
     const categoryManager = useGetCategoryManager();
 

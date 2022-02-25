@@ -6,6 +6,7 @@ import { setCategoryId } from "../../redux/actions/categoriesAction";
 import { useGetCategoryById } from "./categoriesHooks";
 import { setOpenSnackBar } from "../../redux/actions/appAction";
 import { setCategoryError } from "../../redux/actions/categoriesAction";
+import { toggleBackDrop } from "../../redux/actions/appAction";
 
 export const useGetAppManager = () => {
     return useSelector((state) => state.appManager);
@@ -14,21 +15,37 @@ export const useGetAppManager = () => {
 export const useSetModal = () => {
     const dispatch = useDispatch();
     const category = useGetCategoryById();
+    const backDrop = useToggleBackDrop();
 
     const set = async (isEdit = false, id = null) => {
-        let isExit = false;
-        if(id != null) {
-            dispatch(setCategoryId(id));
-            isExit = await category.get(id);
+        let result = false;
+        backDrop.toggle(true);
+        dispatch(setCategoryId(id));
+        if (id != null) {
+            result = await category.get(id);
         }
-        
-        if(category.state.id > 0 && isExit === true) {
+        if (result === true || isEdit === false) {
             dispatch(setOptionModal(isEdit));
             dispatch(setOpenEditModal(true));
         } else {
             dispatch(setOpenSnackBar(true));
-            dispatch(setCategoryError('Выбранной категории больше не существует в базе!'));
+            dispatch(
+                setCategoryError(
+                    "Выбранной категории больше не существует в базе!"
+                )
+            );
         }
+        backDrop.toggle(false);
     };
-    return {set};
+    return { set };
+};
+
+export const useToggleBackDrop = () => {
+    const dispatch = useDispatch();
+    const manager = useGetAppManager();
+
+    const toggle = (isBackDropOn) => {
+        dispatch(toggleBackDrop(isBackDropOn));
+    };
+    return { state: manager.isBackDropOn, toggle };
 };

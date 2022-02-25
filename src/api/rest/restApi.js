@@ -85,8 +85,8 @@ export default class RestApi {
             code,
             parentId: null,
         });
-
-        if (result.status === this.statusPostOk) {
+        
+        if (result.status === this.statusGetOk) {
             return result.data;
         }
 

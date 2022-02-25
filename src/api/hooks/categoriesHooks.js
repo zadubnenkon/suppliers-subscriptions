@@ -16,7 +16,6 @@ import {
     STATUS_INTERNAL_ERROR,
     STATUS_BAD_REQUEST,
 } from "../../redux/reducers/authReducer";
-import { RestaurantOutlined } from "@mui/icons-material";
 
 export const useGetCategories = () => {
     return useSelector((state) => state.categoriesManager.categoriesList);
@@ -80,7 +79,6 @@ export const useCrudCategory = () => {
         });
 
         errors.close();
-
         if (name.length > 0 && code.length > 0) {
             const result = await restService.updateCategory(id, name, code);
             if (result === true) {
@@ -157,7 +155,6 @@ export const useGetCategoryById = () => {
             const result = await restService.getCategoryById(id);
             if (result.status === 200) {
                 dispatch(setSelectedCategory(result.data));
-                if(result.data === "") { return false;}
                 return true;
             }
         }

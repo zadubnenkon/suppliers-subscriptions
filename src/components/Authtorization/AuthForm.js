@@ -33,6 +33,7 @@ export default function AuthForm() {
     };
 
     return (
+        authManager.token === '' &&
         <div
             style={{
                 display: "flex",

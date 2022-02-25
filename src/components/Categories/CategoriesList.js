@@ -6,10 +6,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditModal from "../../components/Modals/EditModal";
 import { useCrudCategory } from "../../api/hooks/categoriesHooks";
 import { useSetModal } from "../../api/hooks/appHooks";
+import { useGetAuthManager } from "../../api/hooks/authHooks";
 
 export default function CategoriesList() {
     const crud = useCrudCategory();
     const getCategories = useGetCategories();
+    const authManager = useGetAuthManager();
     const modal = useSetModal();
 
     const categoriesList = getCategories.map((category) => {
@@ -22,7 +24,7 @@ export default function CategoriesList() {
         { field: "id", headerName: "ID", width: 70 },
         /*{ field: "parentId", headerName: "Родительский ID", width: 130 },*/
         { field: "code", headerName: "Код", width: 120 },
-        { field: "name", headerName: "Название", width: 675 },
+        { field: "name", headerName: "Название", width: 975 },
         {
             field: "action",
             headerName: "Удалить",
@@ -59,6 +61,7 @@ export default function CategoriesList() {
     ];
 
     return (
+        authManager.token !== '' &&
         <div
             style={{
                 display: "flex",
@@ -66,7 +69,7 @@ export default function CategoriesList() {
                 marginTop: "52px",
             }}
         >
-            <div style={{ height: 400, width: "70%" }}>
+            <div style={{ height: 550, width: "70%" }}>
                 <Button
                     variant="contained"
                     color="primary"
@@ -82,7 +85,7 @@ export default function CategoriesList() {
                 <DataGrid
                     rows={categoriesList}
                     columns={columns}
-                    pageSize={5}
+                    pageSize={8}
                     rowsPerPageOptions={[5]}
                     checkboxSelection
                 />

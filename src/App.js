@@ -1,12 +1,17 @@
 import "./App.css";
 import React from "react";
 import AuthForm from "./components/Authtorization/AuthForm";
-import { useGetAuthManager } from "./api/hooks/authHooks";
 import CategoriesList from "./components/Categories/CategoriesList";
+import BackDrop from "./components/Backdrop/BackDrop"
 
 function App() {
-    const authManager = useGetAuthManager();
-    return (authManager.token === '' ? <AuthForm></AuthForm> : <CategoriesList></CategoriesList>) ;
+    return (
+        <div>
+            <BackDrop />
+            <AuthForm />
+            <CategoriesList />
+        </div>
+    );
 }
 
 export default App;

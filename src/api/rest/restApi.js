@@ -25,7 +25,7 @@ export default class RestApi {
                 Authorization: "Bearer " + this.token,
             };
         }
-        
+
         const axiosObj = {
             method: method,
             url: this.url + action,
@@ -78,13 +78,37 @@ export default class RestApi {
         return this.getMessageInternalError(result);
     };
 
+    updateCategory = async (id, name, code) => {
+        const result = await this.sendRequest("put", "categories", {
+            id,
+            name,
+            code,
+            parentId: null,
+        });
+
+        if (result.status === this.statusPostOk) {
+            return result.data;
+        }
+
+        return this.getMessageInternalError(result);
+    };
+
     deleteCategory = async (id) => {
         const result = await this.sendRequest("delete", "categories/?id=" + id);
-        if(result.status === this.statusGetOk) {
+        if (result.status === this.statusGetOk) {
             return result;
         }
         return false;
     };
+
+    getCategoryById = async (id) => {
+        const result = await this.sendRequest("get", "categories/?id=" + id);
+        if (result.status === this.statusGetOk) {
+            return result;
+        }
+
+        return this.getMessageInternalError(result);        
+    }
 
     getMessageInternalError = (data) => {
         const errorObject = {

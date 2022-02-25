@@ -20,12 +20,12 @@ const style = {
     p: 4,
 };
 
-export default function EditModal(nameModal) {
+export default function EditModal() {
     const appManager = useGetAppManager();
     const categoryManager = useGetCategoryManager();
     const message = categoryManager.categoryError;
     const dispatch = useDispatch();
-
+    
     return (
         <div>
             <Modal
@@ -40,7 +40,7 @@ export default function EditModal(nameModal) {
                         variant="h6"
                         component={"div"}
                     >
-                        {nameModal.props}
+                        {appManager.isEditModal === true ? 'Изменить категорию' : 'Добавить категорию'  }
                     </Typography>
                     <Typography
                         component={"div"}

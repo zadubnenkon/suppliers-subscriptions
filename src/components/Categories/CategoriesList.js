@@ -3,16 +3,15 @@ import { useGetCategories } from "../../api/hooks/categoriesHooks";
 import { DataGrid } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { setOpenEditModal } from "../../redux/actions/appAction";
-import { useDispatch } from "react-redux";
 import EditModal from "../../components/Modals/EditModal";
-import { useRemoveCategory } from "../../api/hooks/categoriesHooks";
+import { useCrudCategory } from "../../api/hooks/categoriesHooks";
+import { useSetModal } from "../../api/hooks/appHooks";
 
 export default function CategoriesList() {
-    const category = useRemoveCategory();
+    const crud = useCrudCategory();
     const getCategories = useGetCategories();
-    const dispatch = useDispatch();
-    
+    const modal = useSetModal();
+
     const categoriesList = getCategories.map((category) => {
         const newCat = category;
         newCat.action = category.id;
@@ -35,6 +34,9 @@ export default function CategoriesList() {
                         color="primary"
                         size="small"
                         style={{ marginRight: "2px" }}
+                        onClick={() => {
+                            modal.set(true, params.id);
+                        }}
                     >
                         Изменить
                     </Button>
@@ -45,7 +47,9 @@ export default function CategoriesList() {
                         }}
                         startIcon={<DeleteIcon />}
                         size="small"
-                        onClick={()=>{category.remove(params.id)}}
+                        onClick={() => {
+                            crud.remove(params.id);
+                        }}
                     >
                         Удалить
                     </Button>
@@ -69,7 +73,7 @@ export default function CategoriesList() {
                     size="small"
                     style={{ marginBottom: "10px" }}
                     onClick={() => {
-                        dispatch(setOpenEditModal(true));
+                        modal.set(false);
                     }}
                 >
                     + Добавить категорию
@@ -82,7 +86,7 @@ export default function CategoriesList() {
                     rowsPerPageOptions={[5]}
                     checkboxSelection
                 />
-                <EditModal props={"Добавить категорию"}></EditModal>
+                <EditModal></EditModal>
             </div>
         </div>
     );

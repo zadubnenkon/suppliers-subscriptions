@@ -1,19 +1,22 @@
-import { useSelector, useDispatch } from "react-redux";
 import RestApi from "../rest/restApi";
-import {
-    addCategory,
-    setCategoriesList,
-} from "../../redux/actions/categoriesAction";
+import { useSelector, useDispatch } from "react-redux";
 import { useGetTokenAuthManager } from "./authHooks";
 import { setCategoryError } from "../../redux/actions/categoriesAction";
 import { setCategoryCodeError } from "../../redux/actions/categoriesAction";
 import { setCategoryNameError } from "../../redux/actions/categoriesAction";
 import { setOpenSnackBar } from "../../redux/actions/appAction";
+import { setOpenEditModal } from "../../redux/actions/appAction";
+import { useGetAppManager } from "./appHooks";
+import { setSelectedCategory } from "../../redux/actions/categoriesAction";
+import {
+    addCategory,
+    setCategoriesList,
+} from "../../redux/actions/categoriesAction";
 import {
     STATUS_INTERNAL_ERROR,
     STATUS_BAD_REQUEST,
 } from "../../redux/reducers/authReducer";
-import { setOpenEditModal } from "../../redux/actions/appAction";
+import { RestaurantOutlined } from "@mui/icons-material";
 
 export const useGetCategories = () => {
     return useSelector((state) => state.categoriesManager.categoriesList);
@@ -23,10 +26,10 @@ export const useGetCategoryManager = () => {
     return useSelector((state) => state.categoriesManager);
 };
 
-export const useAddCategory = () => {
+export const useCrudCategory = () => {
     const dispatch = useDispatch();
     const errors = useCloseErrors();
-    const getCat = useGetCategories();
+    const categories = useGetCategories();
     const token = useGetTokenAuthManager();
     const restService = new RestApi(token);
 
@@ -65,19 +68,45 @@ export const useAddCategory = () => {
         }
     };
 
-    return {
-        getCat,
-        add,
+    const update = async (id, name, code) => {
+        const categoriesList = [];
+        categories.forEach((category) => {
+            const newCat = category;
+            if (category.id === id) {
+                newCat.name = name;
+                newCat.code = code;
+            }
+            categoriesList.push(newCat);
+        });
+
+        errors.close();
+
+        if (name.length > 0 && code.length > 0) {
+            const result = await restService.updateCategory(id, name, code);
+            if (result === true) {
+                dispatch(setCategoriesList(categoriesList));
+                dispatch(setOpenEditModal(false));
+            } else {
+                switch (result.status) {
+                    case STATUS_BAD_REQUEST:
+                        dispatch(setCategoryError(result.data.message));
+                        dispatch(setOpenSnackBar(true));
+                        break;
+                    case STATUS_INTERNAL_ERROR:
+                        dispatch(setCategoryError(result.data.message));
+                        dispatch(setOpenSnackBar(true));
+                        break;
+                    default:
+                        return true;
+                }
+            }
+        } else {
+            dispatch(setCategoryError("Заполните все поля перед сохранением!"));
+            dispatch(setOpenSnackBar(true));
+        }
     };
-};
 
-export const useRemoveCategory = () => {
-    const token = useGetTokenAuthManager();
-    const restService = new RestApi(token);
-    const categories = useGetCategories();
-    const dispatch = useDispatch();
-
-    const remove = (id) => {
+    const remove = async (id) => {
         const categoriesList = [];
         categories.forEach((category) => {
             if (category.id !== id) {
@@ -85,10 +114,57 @@ export const useRemoveCategory = () => {
             }
         });
         dispatch(setCategoriesList(categoriesList));
-        restService.deleteCategory(id);
+        const result = await restService.deleteCategory(id);
+        if (result.data === false) {
+            dispatch(setCategoryError("Данной категории не существует!"));
+            dispatch(setOpenSnackBar(true));
+        }
     };
 
-    return { remove };
+    return {
+        categories,
+        add,
+        update,
+        remove,
+    };
+};
+
+export const useCrudManager = () => {
+    const appManager = useGetAppManager();
+    const manager = useGetCategoryManager();
+    const crud = useCrudCategory();
+
+    const manage = (name, code) => {
+        if (appManager.isEditModal) {
+            const id = manager.categoryId;
+            crud.update(id, name, code);
+        } else {
+            crud.add(name, code);
+        }
+    };
+
+    return { manager, manage };
+};
+
+export const useGetCategoryById = () => {
+    const token = useGetTokenAuthManager();
+    const restService = new RestApi(token);
+    const manager = useGetCategoryManager();
+    const dispatch = useDispatch();
+
+    const get = async (id) => {
+        if (id > 0) {
+            const result = await restService.getCategoryById(id);
+            if (result.status === 200) {
+                dispatch(setSelectedCategory(result.data));
+                if(result.data === "") { return false;}
+                return true;
+            }
+        }
+        return false;
+    };
+
+    return { state: manager.selectedCategory, get };
 };
 
 export const useCloseErrors = () => {

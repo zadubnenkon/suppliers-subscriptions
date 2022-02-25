@@ -4,27 +4,27 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import { useChangeInputHandler } from "../../api/hooks/eventHooks";
-import { useGetCategoryManager } from "../../api/hooks/categoriesHooks";
-import { useAddCategory } from "../../api/hooks/categoriesHooks";
 import { setOpenEditModal } from "../../redux/actions/appAction";
 import { useDispatch } from "react-redux";
+import { useCrudManager } from "../../api/hooks/categoriesHooks";
+import { useGetCategoryManager } from "../../api/hooks/categoriesHooks";
 
 export default function EditCategory() {
-    const category = useAddCategory();
     const inputHandler = useChangeInputHandler();
-    const categoryManager = useGetCategoryManager();
+    const crudManager = useCrudManager();
     const dispatch = useDispatch();
+    const categoryManager = useGetCategoryManager();
 
     const submitHandler = (event) => {
         event.preventDefault();
-        category.add(inputHandler.state.name, inputHandler.state.code);
+        crudManager.manage(inputHandler.state.name, inputHandler.state.code);
     };
 
     return (
         <div>
             <form onSubmit={submitHandler}>
                 <TextField
-                    error={categoryManager.nameCategoryError !== "" && true}
+                    error={crudManager.manager.nameCategoryError !== "" && true}
                     style={{ marginBottom: "10px" }}
                     label="Название"
                     placeholder="Введите название категории"
@@ -34,10 +34,11 @@ export default function EditCategory() {
                     onChange={(event) => {
                         inputHandler.setField(event);
                     }}
-                    helperText={categoryManager.nameCategoryError}
+                    defaultValue={categoryManager.selectedCategory.name}
+                    helperText={crudManager.manager.nameCategoryError}
                 />
                 <TextField
-                    error={categoryManager.codeCategoryError !== "" && true}
+                    error={crudManager.manager.codeCategoryError !== "" && true}
                     label="Код"
                     placeholder="Введите код"
                     fullWidth
@@ -46,7 +47,8 @@ export default function EditCategory() {
                     onChange={(event) => {
                         inputHandler.setField(event);
                     }}
-                    helperText={categoryManager.codeCategoryError}
+                    defaultValue={categoryManager.selectedCategory.code}
+                    helperText={crudManager.manager.codeCategoryError}
                     style={{marginBottom:'8px'}}
                 />
                 <Box sx={{ flexGrow: 1 }}>

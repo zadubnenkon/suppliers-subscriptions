@@ -9,6 +9,8 @@ import { setOpenEditModal } from "../../redux/actions/appAction";
 import { useGetAppManager } from "./appHooks";
 import { setSelectedCategory } from "../../redux/actions/categoriesAction";
 import { setParentId } from "../../redux/actions/categoriesAction";
+import { setParentChain, setChainList} from "../../redux/actions/categoriesAction";
+import { useToggleBackDrop } from "./appHooks";
 import {
     addCategory,
     setCategoriesList,
@@ -34,10 +36,21 @@ export const useCrudCategory = () => {
     const manager = useGetCategoryManager();
 
     const add = async (name, code) => {
-        const result = await restService.addCategory(name, code, manager.parentId);
+        const result = await restService.addCategory(
+            name,
+            code,
+            manager.parentId
+        );
         errors.close();
         if (typeof result === "number") {
-            dispatch(addCategory({ id: result, name, code, parentId: manager.parentId}));
+            dispatch(
+                addCategory({
+                    id: result,
+                    name,
+                    code,
+                    parentId: manager.parentId,
+                })
+            );
             dispatch(setOpenEditModal(false));
         } else {
             const messageError = result.data.message;
@@ -81,7 +94,12 @@ export const useCrudCategory = () => {
 
         errors.close();
         if (name.length > 0 && code.length > 0) {
-            const result = await restService.updateCategory(id, name, code, manager.parentId);
+            const result = await restService.updateCategory(
+                id,
+                name,
+                code,
+                manager.parentId
+            );
             if (result === true) {
                 dispatch(setCategoriesList(categoriesList));
                 dispatch(setOpenEditModal(false));
@@ -149,32 +167,58 @@ export const useGetCategoryByField = () => {
     const restService = useRestApiInit();
     const manager = useGetCategoryManager();
     const dispatch = useDispatch();
+    const backDrop = useToggleBackDrop();
 
-    const get = async (field, id, setSelected = true) => {
+    const get = async (field, id, setSelected = true, setChain = false) => {
         if (id > 0) {
+            backDrop.toggle(true);
             const result = await restService.getCategoryByField(field, id);
             if (result.status === 200) {
-                if(setSelected) {
+                if (setSelected) {
                     dispatch(setSelectedCategory(result.data));
                 } else {
-                    field === 'parentId' && dispatch(setParentId(id));
+                    field === "parentId" && dispatch(setParentId(id));
+                    setChain === true && dispatch(setParentChain(id));
                     dispatch(setCategoriesList(result.data));
                 }
+                backDrop.toggle(false);
                 return true;
             }
         }
+        backDrop.toggle(false);
         return false;
     };
 
     return { state: manager.selectedCategory, get };
 };
 
+export const useBackByChainCategory = () => {
+    const manager = useGetCategoryManager();
+    const restService = useRestApiInit();
+    const dispatch = useDispatch();
+    const backDrop = useToggleBackDrop();
+
+    const goBack = async () => {
+        let parentIds = [];
+        if (manager.chainParentIds.length > 0) {
+            backDrop.toggle(true);
+            parentIds = manager.chainParentIds.map((parent) => parent);
+            parentIds.pop();
+            const result = await restService.getCategoryByField( "parentId",  parentIds[parentIds.length - 1]);
+            dispatch(setChainList(parentIds));
+            dispatch(setCategoriesList(result.data));
+            backDrop.toggle(false);
+        }
+    };
+
+    return {goBack};
+};
 
 export const useRestApiInit = () => {
     const token = useGetTokenAuthManager();
     const restService = new RestApi(token);
     return restService;
-} 
+};
 
 export const useCloseErrors = () => {
     const dispatch = useDispatch();

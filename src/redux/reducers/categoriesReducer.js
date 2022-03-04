@@ -6,6 +6,8 @@ export const SET_CATEGORY_NAME_ERROR = "CATEGORIES/SET_CATEGORY_NAME_ERROR";
 export const SET_CATEGORY_ID = "CATEGORIES/SET_CATEGORY_ID";
 export const SET_SELECTED_CATEGORY = "CATEGORIES/SET_SELECTED_CATEGORY";
 export const SET_PARENT_ID = "PARENT/SET_PARENT_ID";
+export const SET_CHAIN_PARENT = "PARENT/SET_CHAIN_PARENT";
+export const SET_CHAIN_LIST = "CHAIN/SET_CHAIN_LIST";
 
 const initialState = {
     categoriesList: [],
@@ -14,6 +16,7 @@ const initialState = {
     codeCategoryError: "",
     categoryId: 0,
     parentId: null,
+    chainParentIds: [],
     selectedCategory: { id: 0, name: "", code: "", parentId: null },
 };
 
@@ -38,6 +41,16 @@ export const categoriesReducer = (state = initialState, action) => {
             return { ...state, selectedCategory: action.payload };
         case SET_PARENT_ID:
             return { ...state, parentId: action.payload };
+        case SET_CHAIN_PARENT:
+            return {
+                ...state,
+                chainParentIds: state.chainParentIds.concat(action.payload),
+            };
+        case SET_CHAIN_LIST: 
+        return {
+            ...state,
+            chainParentIds: action.payload,
+        };
         default:
             return state;
     }

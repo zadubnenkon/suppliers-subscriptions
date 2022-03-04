@@ -4,9 +4,14 @@ import { DataGrid } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditModal from "../../components/Modals/EditModal";
-import { useCrudCategory, useGetCategoryByField } from "../../api/hooks/categoriesHooks";
+import {
+    useCrudCategory,
+    useGetCategoryByField,
+} from "../../api/hooks/categoriesHooks";
 import { useSetModal } from "../../api/hooks/appHooks";
 import { useGetAuthManager } from "../../api/hooks/authHooks";
+import { useBackByChainCategory } from "../../api/hooks/categoriesHooks";
+import Grid from "@mui/material/Grid";
 
 export default function CategoriesList() {
     const crud = useCrudCategory();
@@ -14,6 +19,7 @@ export default function CategoriesList() {
     const authManager = useGetAuthManager();
     const modal = useSetModal();
     const category = useGetCategoryByField();
+    const chainCategory = useBackByChainCategory();
 
     const categoriesList = getCategories.map((category) => {
         const newCat = category;
@@ -29,7 +35,7 @@ export default function CategoriesList() {
         {
             field: "action",
             headerName: "Удалить",
-            width: 250,
+            width: 300,
             renderCell: (params) => (
                 <strong>
                     <Button
@@ -38,7 +44,7 @@ export default function CategoriesList() {
                         size="small"
                         style={{ marginRight: "2px" }}
                         onClick={() => {
-                            category.get("parentId", params.id, false);
+                            category.get("parentId", params.id, false, true);
                         }}
                     >
                         Список
@@ -73,36 +79,53 @@ export default function CategoriesList() {
     ];
 
     return (
-        authManager.token !== '' &&
-        <div
-            style={{
-                display: "flex",
-                justifyContent: "center",
-                marginTop: "52px",
-            }}
-        >
-            <div style={{ height: 550, width: "70%" }}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    style={{ marginBottom: "10px" }}
-                    onClick={() => {
-                        modal.set(false);
-                    }}
-                >
-                    + Добавить категорию
-                </Button>
+        authManager.token !== "" && (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    marginTop: "52px",
+                }}
+            >
+                <div style={{ height: 550, width: "72%" }}>
+                    <Grid container spacing={1}>
+                        <Grid xs={12} item={true}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                size="small"
+                                style={{ marginBottom: "10px" }}
+                                onClick={() => {
+                                    modal.set(false);
+                                }}
+                            >
+                                + Добавить категорию
+                            </Button>
+                        </Grid>
+                        <Grid item={true}></Grid>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            style={{ marginRight: "2px" }}
+                            onClick={() => {
+                                chainCategory.goBack();
+                            }}
+                        >
+                            Назад
+                        </Button>
+                    </Grid>
 
-                <DataGrid
-                    rows={categoriesList}
-                    columns={columns}
-                    pageSize={8}
-                    rowsPerPageOptions={[5]}
-                    checkboxSelection
-                />
-                <EditModal></EditModal>
+                    <DataGrid
+                        rows={categoriesList}
+                        columns={columns}
+                        pageSize={8}
+                        rowsPerPageOptions={[5]}
+                        checkboxSelection
+                    />
+                    <EditModal></EditModal>
+                </div>
             </div>
-        </div>
+        )
     );
 }

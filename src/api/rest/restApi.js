@@ -64,11 +64,11 @@ export default class RestApi {
         return await this.sendRequest("get", "categories");
     };
 
-    addCategory = async (name, code) => {
+    addCategory = async (name, code, parentId = null) => {
         const result = await this.sendRequest("post", "categories", {
             name,
             code,
-            parentId: null,
+            parentId: parentId,
         });
 
         if (result.status === this.statusPostOk) {
@@ -78,12 +78,12 @@ export default class RestApi {
         return this.getMessageInternalError(result);
     };
 
-    updateCategory = async (id, name, code) => {
+    updateCategory = async (id, name, code, parentId = null) => {
         const result = await this.sendRequest("put", "categories", {
             id,
             name,
             code,
-            parentId: null,
+            parentId: parentId,
         });
         
         if (result.status === this.statusGetOk) {
@@ -103,6 +103,15 @@ export default class RestApi {
 
     getCategoryById = async (id) => {
         const result = await this.sendRequest("get", "categories/?id=" + id);
+        if (result.status === this.statusGetOk) {
+            return result;
+        }
+
+        return this.getMessageInternalError(result);        
+    }
+
+    getCategoryByField = async (field='id', value='') => {
+        const result = await this.sendRequest("get", "categories/?"+field+"=" + value);
         if (result.status === this.statusGetOk) {
             return result;
         }

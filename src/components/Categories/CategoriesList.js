@@ -4,7 +4,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditModal from "../../components/Modals/EditModal";
-import { useCrudCategory } from "../../api/hooks/categoriesHooks";
+import { useCrudCategory, useGetCategoryByField } from "../../api/hooks/categoriesHooks";
 import { useSetModal } from "../../api/hooks/appHooks";
 import { useGetAuthManager } from "../../api/hooks/authHooks";
 
@@ -13,6 +13,7 @@ export default function CategoriesList() {
     const getCategories = useGetCategories();
     const authManager = useGetAuthManager();
     const modal = useSetModal();
+    const category = useGetCategoryByField();
 
     const categoriesList = getCategories.map((category) => {
         const newCat = category;
@@ -31,6 +32,17 @@ export default function CategoriesList() {
             width: 250,
             renderCell: (params) => (
                 <strong>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        style={{ marginRight: "2px" }}
+                        onClick={() => {
+                            category.get("parentId", params.id, false);
+                        }}
+                    >
+                        Список
+                    </Button>
                     <Button
                         variant="contained"
                         color="primary"

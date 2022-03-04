@@ -8,6 +8,7 @@ import { setOpenSnackBar } from "../../redux/actions/appAction";
 import { setOpenEditModal } from "../../redux/actions/appAction";
 import { useGetAppManager } from "./appHooks";
 import { setSelectedCategory } from "../../redux/actions/categoriesAction";
+import { setParentId } from "../../redux/actions/categoriesAction";
 import {
     addCategory,
     setCategoriesList,
@@ -29,14 +30,14 @@ export const useCrudCategory = () => {
     const dispatch = useDispatch();
     const errors = useCloseErrors();
     const categories = useGetCategories();
-    const token = useGetTokenAuthManager();
-    const restService = new RestApi(token);
+    const restService = useRestApiInit();
+    const manager = useGetCategoryManager();
 
     const add = async (name, code) => {
-        const result = await restService.addCategory(name, code);
+        const result = await restService.addCategory(name, code, manager.parentId);
         errors.close();
         if (typeof result === "number") {
-            dispatch(addCategory({ id: result, name, code, parentId: null }));
+            dispatch(addCategory({ id: result, name, code, parentId: manager.parentId}));
             dispatch(setOpenEditModal(false));
         } else {
             const messageError = result.data.message;
@@ -80,7 +81,7 @@ export const useCrudCategory = () => {
 
         errors.close();
         if (name.length > 0 && code.length > 0) {
-            const result = await restService.updateCategory(id, name, code);
+            const result = await restService.updateCategory(id, name, code, manager.parentId);
             if (result === true) {
                 dispatch(setCategoriesList(categoriesList));
                 dispatch(setOpenEditModal(false));
@@ -144,17 +145,21 @@ export const useCrudManager = () => {
     return { manager, manage };
 };
 
-export const useGetCategoryById = () => {
-    const token = useGetTokenAuthManager();
-    const restService = new RestApi(token);
+export const useGetCategoryByField = () => {
+    const restService = useRestApiInit();
     const manager = useGetCategoryManager();
     const dispatch = useDispatch();
 
-    const get = async (id) => {
+    const get = async (field, id, setSelected = true) => {
         if (id > 0) {
-            const result = await restService.getCategoryById(id);
+            const result = await restService.getCategoryByField(field, id);
             if (result.status === 200) {
-                dispatch(setSelectedCategory(result.data));
+                if(setSelected) {
+                    dispatch(setSelectedCategory(result.data));
+                } else {
+                    field === 'parentId' && dispatch(setParentId(id));
+                    dispatch(setCategoriesList(result.data));
+                }
                 return true;
             }
         }
@@ -163,6 +168,13 @@ export const useGetCategoryById = () => {
 
     return { state: manager.selectedCategory, get };
 };
+
+
+export const useRestApiInit = () => {
+    const token = useGetTokenAuthManager();
+    const restService = new RestApi(token);
+    return restService;
+} 
 
 export const useCloseErrors = () => {
     const dispatch = useDispatch();

@@ -3,10 +3,10 @@ import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import FormHelperText from "@mui/material/FormHelperText";
 import { useAuthtorize } from "../../api/hooks/authHooks";
 import { useChangeInputHandler } from "../../api/hooks/eventHooks";
 import { useGetAuthManager } from "../../api/hooks/authHooks";
-import FormHelperText from "@mui/material/FormHelperText";
 
 const paperStyle = {
     padding: 20,

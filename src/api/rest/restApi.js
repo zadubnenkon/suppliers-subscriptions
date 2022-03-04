@@ -64,11 +64,11 @@ export default class RestApi {
         return await this.sendRequest("get", "categories");
     };
 
-    addCategory = async (name, code) => {
+    addCategory = async (name, code, parentId = null) => {
         const result = await this.sendRequest("post", "categories", {
             name,
             code,
-            parentId: null,
+            parentId: parentId,
         });
 
         if (result.status === this.statusPostOk) {
@@ -78,14 +78,14 @@ export default class RestApi {
         return this.getMessageInternalError(result);
     };
 
-    updateCategory = async (id, name, code) => {
+    updateCategory = async (id, name, code, parentId = null) => {
         const result = await this.sendRequest("put", "categories", {
             id,
             name,
             code,
-            parentId: null,
+            parentId: parentId,
         });
-        
+
         if (result.status === this.statusGetOk) {
             return result.data;
         }
@@ -94,7 +94,16 @@ export default class RestApi {
     };
 
     deleteCategory = async (id) => {
+        console.log('dfsd');
         const result = await this.sendRequest("delete", "categories/?id=" + id);
+        const categories = await this.getCategoryByField("parentId", id);
+        console.log(categories.data);
+        if(categories.data.length > 0) {
+            categories.data.forEach((category)=> {
+                this.sendRequest("delete", "categories/?id=" + category.id);
+            });
+        }
+
         if (result.status === this.statusGetOk) {
             return result;
         }
@@ -107,8 +116,20 @@ export default class RestApi {
             return result;
         }
 
-        return this.getMessageInternalError(result);        
-    }
+        return this.getMessageInternalError(result);
+    };
+
+    getCategoryByField = async (field = "id", value = "") => {
+        const result = await this.sendRequest(
+            "get",
+            "categories/?" + field + "=" + value
+        );
+        if (result.status === this.statusGetOk) {
+            return result;
+        }
+
+        return this.getMessageInternalError(result);
+    };
 
     getMessageInternalError = (data) => {
         const errorObject = {

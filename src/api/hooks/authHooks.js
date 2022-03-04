@@ -29,7 +29,7 @@ export const useAuthtorize = () => {
         const result = await restService.auth(login, password);
         if (typeof result === "string") {
             dispatch(setTokenAction(result));
-            const categories = await restService.getCategories();
+            const categories = await restService.getCategoryByField('parentId', 0);
             dispatch(setCategoriesList(categories.data));
         } else {
             switch (result.status) {

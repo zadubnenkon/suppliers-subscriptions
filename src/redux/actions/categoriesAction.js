@@ -6,6 +6,9 @@ import {
     SET_CATEGORY_NAME_ERROR,
     SET_CATEGORY_ID,
     SET_SELECTED_CATEGORY,
+    SET_PARENT_ID,
+    SET_CHAIN_PARENT,
+    SET_CHAIN_LIST
 } from "../reducers/categoriesReducer";
 
 export function setCategoriesList(list) {
@@ -34,4 +37,16 @@ export function setCategoryId(id) {
 
 export function setSelectedCategory(category) {
     return { type: SET_SELECTED_CATEGORY, payload: category };
+}
+
+export function setParentId(id) {
+    return { type: SET_PARENT_ID, payload: id };
+}
+
+export function setParentChain(id) {
+    return {type:SET_CHAIN_PARENT, payload: id};
+}
+
+export function setChainList(list) {
+    return {type: SET_CHAIN_LIST, payload: list};
 }

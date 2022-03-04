@@ -1,17 +1,18 @@
 import React from "react";
-import { useGetCategories } from "../../api/hooks/categoriesHooks";
-import { DataGrid } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditModal from "../../components/Modals/EditModal";
-import {
-    useCrudCategory,
-    useGetCategoryByField,
-} from "../../api/hooks/categoriesHooks";
+import Grid from "@mui/material/Grid";
+import { DataGrid } from "@mui/x-data-grid";
 import { useSetModal } from "../../api/hooks/appHooks";
 import { useGetAuthManager } from "../../api/hooks/authHooks";
-import { useBackByChainCategory } from "../../api/hooks/categoriesHooks";
-import Grid from "@mui/material/Grid";
+import {
+    useGetCategories,
+    useBackByChainCategory,
+    useCrudCategory,
+    useGetCategoryByField,
+    useGetCategoryManager,
+} from "../../api/hooks/categoriesHooks";
 
 export default function CategoriesList() {
     const crud = useCrudCategory();
@@ -20,6 +21,7 @@ export default function CategoriesList() {
     const modal = useSetModal();
     const category = useGetCategoryByField();
     const chainCategory = useBackByChainCategory();
+    const manager = useGetCategoryManager();
 
     const categoriesList = getCategories.map((category) => {
         const newCat = category;
@@ -103,17 +105,19 @@ export default function CategoriesList() {
                             </Button>
                         </Grid>
                         <Grid item={true}></Grid>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            size="small"
-                            style={{ marginRight: "2px" }}
-                            onClick={() => {
-                                chainCategory.goBack();
-                            }}
-                        >
-                            Назад
-                        </Button>
+                        {manager.chainParentIds.length > 0 && (
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                size="small"
+                                style={{ marginRight: "2px" }}
+                                onClick={() => {
+                                    chainCategory.goBack();
+                                }}
+                            >
+                                Назад
+                            </Button>
+                        )}
                     </Grid>
 
                     <DataGrid

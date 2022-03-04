@@ -1,16 +1,17 @@
 import RestApi from "../rest/restApi";
 import { useSelector, useDispatch } from "react-redux";
 import { useGetTokenAuthManager } from "./authHooks";
-import { setCategoryError } from "../../redux/actions/categoriesAction";
-import { setCategoryCodeError } from "../../redux/actions/categoriesAction";
-import { setCategoryNameError } from "../../redux/actions/categoriesAction";
-import { setOpenSnackBar } from "../../redux/actions/appAction";
-import { setOpenEditModal } from "../../redux/actions/appAction";
-import { useGetAppManager } from "./appHooks";
-import { setSelectedCategory } from "../../redux/actions/categoriesAction";
-import { setParentId } from "../../redux/actions/categoriesAction";
-import { setParentChain, setChainList} from "../../redux/actions/categoriesAction";
-import { useToggleBackDrop } from "./appHooks";
+import { setOpenSnackBar, setOpenEditModal } from "../../redux/actions/appAction";
+import { useGetAppManager, useToggleBackDrop} from "./appHooks";
+import {
+    setParentChain,
+    setChainList,
+    setSelectedCategory,
+    setParentId,
+    setCategoryNameError,
+    setCategoryCodeError,
+    setCategoryError,
+} from "../../redux/actions/categoriesAction";
 import {
     addCategory,
     setCategoriesList,
@@ -204,14 +205,17 @@ export const useBackByChainCategory = () => {
             backDrop.toggle(true);
             parentIds = manager.chainParentIds.map((parent) => parent);
             parentIds.pop();
-            const result = await restService.getCategoryByField( "parentId",  parentIds[parentIds.length - 1]);
+            const result = await restService.getCategoryByField(
+                "parentId",
+                parentIds[parentIds.length - 1]
+            );
             dispatch(setChainList(parentIds));
             dispatch(setCategoriesList(result.data));
             backDrop.toggle(false);
         }
     };
 
-    return {goBack};
+    return { goBack };
 };
 
 export const useRestApiInit = () => {

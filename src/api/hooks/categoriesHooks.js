@@ -1,8 +1,11 @@
 import RestApi from "../rest/restApi";
 import { useSelector, useDispatch } from "react-redux";
 import { useGetTokenAuthManager } from "./authHooks";
-import { setOpenSnackBar, setOpenEditModal } from "../../redux/actions/appAction";
-import { useGetAppManager, useToggleBackDrop} from "./appHooks";
+import {
+    setOpenSnackBar,
+    setOpenEditModal,
+} from "../../redux/actions/appAction";
+import { useGetAppManager, useToggleBackDrop } from "./appHooks";
 import {
     setParentChain,
     setChainList,
@@ -216,6 +219,43 @@ export const useBackByChainCategory = () => {
     };
 
     return { goBack };
+};
+
+export const useCheckCategoryExist = () => {
+    const restService = useRestApiInit();
+    const manager = useGetCategoryManager();
+    const parentsList = manager.chainParentIds;
+    const dispatch = useDispatch();
+
+    const check = async (id) => {
+        const result = await restService.getCategoryByField("id", id);
+        let parentId = 0;
+        if (result.status === 200) {
+            if (result.data.length <= 0) {
+                if (parentsList.length > 0) {
+                    parentId = parentsList[parentsList.length - 1];
+                }
+
+                const categories = await restService.getCategoryByField("parentId", parentId);
+                if (categories.status === 200) {
+                    dispatch(setCategoriesList(categories.data));
+                }
+
+                dispatch(setOpenSnackBar(true));
+                dispatch(
+                    setCategoryError(
+                        "Выбранной категории больше не существует в базе!"
+                    )
+                );
+
+                return false;
+            }
+
+            return true;
+        }
+    };
+
+    return { check };
 };
 
 export const useRestApiInit = () => {

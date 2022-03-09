@@ -12,6 +12,7 @@ import {
     useCrudCategory,
     useGetCategoryByField,
     useGetCategoryManager,
+    useCheckCategoryExist
 } from "../../api/hooks/categoriesHooks";
 
 export default function CategoriesList() {
@@ -22,12 +23,23 @@ export default function CategoriesList() {
     const category = useGetCategoryByField();
     const chainCategory = useBackByChainCategory();
     const manager = useGetCategoryManager();
+    const checkCatExist = useCheckCategoryExist();
 
     const categoriesList = getCategories.map((category) => {
         const newCat = category;
         newCat.action = category.id;
         return newCat;
     });
+
+    const openCategoriesList = async (id) => {
+        let check = false;
+        await checkCatExist.check(id).then((result)=>{
+            check = result;
+        });
+        if(check) {
+            category.get("parentId", id, false, true);
+        }
+    }
 
     const columns = [
         { field: "id", headerName: "ID", width: 70 },
@@ -45,9 +57,7 @@ export default function CategoriesList() {
                         color="primary"
                         size="small"
                         style={{ marginRight: "2px" }}
-                        onClick={() => {
-                            category.get("parentId", params.id, false, true);
-                        }}
+                        onClick={()=>{openCategoriesList(params.id)}}
                     >
                         Список
                     </Button>

@@ -21,6 +21,7 @@ import {
     setBreadcrumbsList,
 } from "../../redux/actions/categoriesAction";
 import { useDispatch } from "react-redux";
+import { setParentId } from "../../redux/actions/categoriesAction";
 
 export default function CategoriesList() {
     const crud = useCrudCategory();
@@ -172,6 +173,9 @@ export default function CategoriesList() {
                                 size="small"
                                 style={{ marginBottom: "10px" }}
                                 onClick={() => {
+                                    if(manager.breadcrumbs.length === 1) {
+                                        dispatch(setParentId(null));
+                                    }
                                     modal.set(false);
                                 }}
                             >

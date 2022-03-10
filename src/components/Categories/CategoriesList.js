@@ -9,6 +9,7 @@ import Grid from "@mui/material/Grid";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Link from "@mui/material/Link";
 import { DataGrid } from "@mui/x-data-grid";
+import { DataGridPro } from "@mui/x-data-grid-pro";
 import { useSetModal } from "../../api/hooks/appHooks";
 import { useGetAuthManager } from "../../api/hooks/authHooks";
 import {
@@ -25,6 +26,7 @@ import {
 } from "../../redux/actions/categoriesAction";
 import { useDispatch } from "react-redux";
 import { setParentId } from "../../redux/actions/categoriesAction";
+import { Container } from "@mui/material";
 
 export default function CategoriesList() {
     const crud = useCrudCategory();
@@ -89,10 +91,10 @@ export default function CategoriesList() {
         { field: "id", headerName: "ID", width: 70 },
         /*{ field: "parentId", headerName: "Родительский ID", width: 130 },*/
         { field: "code", headerName: "Код", width: 120 },
-        { field: "name", headerName: "Название", width: 950 },
+        { field: "name", headerName: "Название", flex: 1, minWidth: 400 },
         {
             field: "action",
-            headerName: "Удалить",
+            headerName: "Действия",
             width: 150,
             renderCell: (params) => (
                 <strong>
@@ -126,8 +128,8 @@ export default function CategoriesList() {
                         onClick={() => {
                             crud.remove(params.id);
                         }}
-                    >        
-                        <DeleteIcon/>
+                    >
+                        <DeleteIcon />
                     </IconButton>
                 </strong>
             ),
@@ -136,14 +138,8 @@ export default function CategoriesList() {
 
     return (
         authManager.token !== "" && (
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    marginTop: "52px",
-                }}
-            >
-                <div style={{ height: 550, width: "72%" }}>
+            <div style={{marginTop: "30px",}}>
+                <Container style={{ height: 550 }}>
                     <div role="presentation">
                         <Breadcrumbs aria-label="breadcrumb">
                             {manager.breadcrumbs.map((category) => {
@@ -164,13 +160,12 @@ export default function CategoriesList() {
                         </Breadcrumbs>
                     </div>
 
-                    <Grid container spacing={1}>
-                        <Grid xs={12} item={true}>
+                    <Grid style={{ marginTop: 1, marginBottom: "10px" }} container spacing={1}>
+                        <Grid item={true}>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 size="small"
-                                style={{ marginBottom: "10px" }}
                                 onClick={() => {
                                     if (manager.breadcrumbs.length === 1) {
                                         dispatch(setParentId(null));
@@ -181,19 +176,20 @@ export default function CategoriesList() {
                                 + Добавить категорию
                             </Button>
                         </Grid>
-                        <Grid item={true}></Grid>
                         {manager.breadcrumbs.length > 1 && (
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                size="small"
-                                style={{ marginRight: "2px" }}
-                                onClick={() => {
-                                    chainCategory.goBack();
-                                }}
-                            >
-                                Назад
-                            </Button>
+                            <Grid item={true}>
+
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    size="small"
+                                    onClick={() => {
+                                        chainCategory.goBack();
+                                    }}
+                                >
+                                    Назад
+                                </Button>
+                            </Grid>
                         )}
                     </Grid>
 
@@ -202,10 +198,10 @@ export default function CategoriesList() {
                         columns={columns}
                         pageSize={8}
                         rowsPerPageOptions={[]}
-                        checkboxSelection
+                    // checkboxSelection
                     />
                     <EditModal></EditModal>
-                </div>
+                </Container>
             </div>
         )
     );

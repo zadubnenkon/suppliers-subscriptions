@@ -200,15 +200,29 @@ export const useBackByChainCategory = () => {
     const restService = useRestApiInit();
     const dispatch = useDispatch();
     const backDrop = useToggleBackDrop();
+    const checkCatExist = useCheckCategoryExist();
 
     const goBack = async () => {
         let breadcrumbs = manager.breadcrumbs.map((breadcrumb) => breadcrumb);
+        let check = false;
+
         if (breadcrumbs.length > 1) {
+            let categoryId = 0;
             backDrop.toggle(true);
             breadcrumbs.pop();
+            categoryId = breadcrumbs[breadcrumbs.length - 1].id;
+            await checkCatExist.check(categoryId).then((result) => {
+                check = result;
+            });
+
+            if(!check) {
+                breadcrumbs.pop();
+                categoryId = breadcrumbs[breadcrumbs.length - 1].id;
+            }
+            
             const result = await restService.getCategoryByField(
                 "parentId",
-                breadcrumbs[breadcrumbs.length - 1].id
+                categoryId
             );
             dispatch(setBreadcrumbsList(breadcrumbs));
             dispatch(setCategoriesList(result.data));

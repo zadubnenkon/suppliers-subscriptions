@@ -39,33 +39,36 @@ export default function CategoriesList() {
         return newCat;
     });
 
-   const isExistCategory = async (id) => {
+    const isExistCategory = async (id) => {
         let check = false;
-        if (id > 0) {
-            await checkCatExist.check(id).then((result) => {
-                check = result;
-            });
-        } else {
-            check = true;
-        }
-        return check 
-    }
+        await checkCatExist.check(id).then((result) => {
+            check = result;
+        });
+        return check;
+    };
 
     const openCategoriesList = async (id) => {
-      let existCategory = await isExistCategory(id);
+        let existCategory = await isExistCategory(id);
         if (existCategory) {
             category.get("parentId", id, false, true);
         }
     };
 
-    function handleClick(event, id) {
+    async function handleClick(event, id) {
         event.preventDefault();
         let findIndex = -1;
+        let existCategory = await isExistCategory(id);
+
         manager.breadcrumbs.forEach((breadcrumb, index) => {
             if (breadcrumb.id === id) {
                 findIndex = index;
             }
         });
+
+        if (!existCategory) {
+            findIndex = findIndex - 1;
+            id = manager.breadcrumbs[findIndex].id;
+        }
 
         openCategoriesList(id);
         let arBreadcrumbs = [];
@@ -142,17 +145,16 @@ export default function CategoriesList() {
                 }}
             >
                 <div style={{ height: 550, width: "72%" }}>
-                    <div
-                        role="presentation"
-
-                    >
+                    <div role="presentation">
                         <Breadcrumbs aria-label="breadcrumb">
                             {manager.breadcrumbs.map((category) => {
                                 return (
                                     <Link
                                         underline="hover"
                                         color="inherit"
-                                        onClick={(event) => handleClick(event, category.id)}
+                                        onClick={(event) =>
+                                            handleClick(event, category.id)
+                                        }
                                         href="/"
                                     >
                                         {category.name}

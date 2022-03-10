@@ -174,7 +174,6 @@ export const useGetCategoryByField = () => {
     const backDrop = useToggleBackDrop();
 
     const get = async (field, id, setSelected = true, setChain = false) => {
-
         backDrop.toggle(true);
         const result = await restService.getCategoryByField(field, id);
         if (result.status === 200) {
@@ -203,7 +202,7 @@ export const useBackByChainCategory = () => {
     const backDrop = useToggleBackDrop();
 
     const goBack = async () => {
-        let breadcrumbs = manager.breadcrumbs.map((breadcrumb)=> breadcrumb);
+        let breadcrumbs = manager.breadcrumbs.map((breadcrumb) => breadcrumb);
         if (breadcrumbs.length > 1) {
             backDrop.toggle(true);
             breadcrumbs.pop();
@@ -223,35 +222,40 @@ export const useBackByChainCategory = () => {
 export const useCheckCategoryExist = () => {
     const restService = useRestApiInit();
     const manager = useGetCategoryManager();
-    const parentsList = manager.breadcrumbs.map((breadcrumb)=>breadcrumb.id);
+    const parentsList = manager.breadcrumbs.map((breadcrumb) => breadcrumb.id);
     const dispatch = useDispatch();
 
     const check = async (id) => {
-        const result = await restService.getCategoryByField("id", id);
-        let parentId = 0;
-        if (result.status === 200) {
-            if (result.data.length <= 0) {
-                if (parentsList.length > 0) {
-                    parentId = parentsList[parentsList.length - 1];
+        if (id > 0) {
+            const result = await restService.getCategoryByField("id", id);
+            let parentId = 0;
+            if (result.status === 200) {
+                if (result.data.length <= 0) {
+                    if (parentsList.length > 0) {
+                        parentId = parentsList[parentsList.length - 1];
+                    }
+
+                    const categories = await restService.getCategoryByField(
+                        "parentId",
+                        parentId
+                    );
+                    if (categories.status === 200) {
+                        dispatch(setCategoriesList(categories.data));
+                    }
+
+                    dispatch(setOpenSnackBar(true));
+                    dispatch(
+                        setCategoryError(
+                            "Выбранной категории больше не существует в базе!"
+                        )
+                    );
+
+                    return false;
                 }
-
-                const categories = await restService.getCategoryByField("parentId", parentId);
-                if (categories.status === 200) {
-                    dispatch(setCategoriesList(categories.data));
-                }
-
-                dispatch(setOpenSnackBar(true));
-                dispatch(
-                    setCategoryError(
-                        "Выбранной категории больше не существует в базе!"
-                    )
-                );
-
-                return false;
             }
-
-            return true;
         }
+
+        return true;
     };
 
     return { check };

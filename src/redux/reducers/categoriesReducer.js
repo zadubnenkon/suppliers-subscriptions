@@ -8,6 +8,8 @@ export const SET_SELECTED_CATEGORY = "CATEGORIES/SET_SELECTED_CATEGORY";
 export const SET_PARENT_ID = "PARENT/SET_PARENT_ID";
 export const SET_CHAIN_PARENT = "PARENT/SET_CHAIN_PARENT";
 export const SET_CHAIN_LIST = "CHAIN/SET_CHAIN_LIST";
+export const SET_BREADCRUMBS_CATEGORIES = "BREADCRUMBS/SET_BREADCRUMBS_CATEGORIES";
+export const SET_BREADCRUMBS_LIST = "BREADCRUMBS/SET_BREADCRUMBS_LIST";
 
 const initialState = {
     categoriesList: [],
@@ -17,6 +19,7 @@ const initialState = {
     categoryId: 0,
     parentId: null,
     chainParentIds: [],
+    breadcrumbs: [{id: 0, name: 'Главная'}],
     selectedCategory: { id: 0, name: "", code: "", parentId: null },
 };
 
@@ -51,6 +54,16 @@ export const categoriesReducer = (state = initialState, action) => {
             ...state,
             chainParentIds: action.payload,
         };
+        case SET_BREADCRUMBS_CATEGORIES:
+        return {
+            ...state,
+            breadcrumbs: state.breadcrumbs.concat(action.payload)
+        }
+        case SET_BREADCRUMBS_LIST: 
+        return {
+            ...state,
+            breadcrumbs: action.payload
+        }
         default:
             return state;
     }

@@ -8,7 +8,7 @@ import {
 import { useGetAppManager, useToggleBackDrop } from "./appHooks";
 import {
     setParentChain,
-    setChainList,
+    setBreadcrumbsList,
     setSelectedCategory,
     setParentId,
     setCategoryNameError,
@@ -174,21 +174,21 @@ export const useGetCategoryByField = () => {
     const backDrop = useToggleBackDrop();
 
     const get = async (field, id, setSelected = true, setChain = false) => {
-        if (id > 0) {
-            backDrop.toggle(true);
-            const result = await restService.getCategoryByField(field, id);
-            if (result.status === 200) {
-                if (setSelected) {
-                    dispatch(setSelectedCategory(result.data));
-                } else {
-                    field === "parentId" && dispatch(setParentId(id));
-                    setChain === true && dispatch(setParentChain(id));
-                    dispatch(setCategoriesList(result.data));
-                }
-                backDrop.toggle(false);
-                return true;
+
+        backDrop.toggle(true);
+        const result = await restService.getCategoryByField(field, id);
+        if (result.status === 200) {
+            if (setSelected) {
+                dispatch(setSelectedCategory(result.data));
+            } else {
+                field === "parentId" && dispatch(setParentId(id));
+                setChain === true && dispatch(setParentChain(id));
+                dispatch(setCategoriesList(result.data));
             }
+            backDrop.toggle(false);
+            return true;
         }
+
         backDrop.toggle(false);
         return false;
     };
@@ -203,16 +203,15 @@ export const useBackByChainCategory = () => {
     const backDrop = useToggleBackDrop();
 
     const goBack = async () => {
-        let parentIds = [];
-        if (manager.chainParentIds.length > 0) {
+        let breadcrumbs = manager.breadcrumbs.map((breadcrumb)=> breadcrumb);
+        if (breadcrumbs.length > 1) {
             backDrop.toggle(true);
-            parentIds = manager.chainParentIds.map((parent) => parent);
-            parentIds.pop();
+            breadcrumbs.pop();
             const result = await restService.getCategoryByField(
                 "parentId",
-                parentIds[parentIds.length - 1]
+                breadcrumbs[breadcrumbs.length - 1].id
             );
-            dispatch(setChainList(parentIds));
+            dispatch(setBreadcrumbsList(breadcrumbs));
             dispatch(setCategoriesList(result.data));
             backDrop.toggle(false);
         }
@@ -224,7 +223,7 @@ export const useBackByChainCategory = () => {
 export const useCheckCategoryExist = () => {
     const restService = useRestApiInit();
     const manager = useGetCategoryManager();
-    const parentsList = manager.chainParentIds;
+    const parentsList = manager.breadcrumbs.map((breadcrumb)=>breadcrumb.id);
     const dispatch = useDispatch();
 
     const check = async (id) => {

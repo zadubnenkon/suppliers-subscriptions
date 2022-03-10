@@ -3,6 +3,8 @@ import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditModal from "../../components/Modals/EditModal";
 import Grid from "@mui/material/Grid";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import Link from "@mui/material/Link";
 import { DataGrid } from "@mui/x-data-grid";
 import { useSetModal } from "../../api/hooks/appHooks";
 import { useGetAuthManager } from "../../api/hooks/authHooks";
@@ -12,8 +14,13 @@ import {
     useCrudCategory,
     useGetCategoryByField,
     useGetCategoryManager,
-    useCheckCategoryExist
+    useCheckCategoryExist,
 } from "../../api/hooks/categoriesHooks";
+import {
+    setBreadcrumbs,
+    setBreadcrumbsList,
+} from "../../redux/actions/categoriesAction";
+import { useDispatch } from "react-redux";
 
 export default function CategoriesList() {
     const crud = useCrudCategory();
@@ -24,6 +31,7 @@ export default function CategoriesList() {
     const chainCategory = useBackByChainCategory();
     const manager = useGetCategoryManager();
     const checkCatExist = useCheckCategoryExist();
+    const dispatch = useDispatch();
 
     const categoriesList = getCategories.map((category) => {
         const newCat = category;
@@ -31,14 +39,43 @@ export default function CategoriesList() {
         return newCat;
     });
 
-    const openCategoriesList = async (id) => {
+   const isExistCategory = async (id) => {
         let check = false;
-        await checkCatExist.check(id).then((result)=>{
-            check = result;
-        });
-        if(check) {
+        if (id > 0) {
+            await checkCatExist.check(id).then((result) => {
+                check = result;
+            });
+        } else {
+            check = true;
+        }
+        return check 
+    }
+
+    const openCategoriesList = async (id) => {
+      let existCategory = await isExistCategory(id);
+        if (existCategory) {
             category.get("parentId", id, false, true);
         }
+    };
+
+    function handleClick(event, id) {
+        event.preventDefault();
+        let findIndex = -1;
+        manager.breadcrumbs.forEach((breadcrumb, index) => {
+            if (breadcrumb.id === id) {
+                findIndex = index;
+            }
+        });
+
+        openCategoriesList(id);
+        let arBreadcrumbs = [];
+        manager.breadcrumbs.forEach((breadcrumb, index) => {
+            if (index <= findIndex) {
+                arBreadcrumbs.push(breadcrumb);
+            }
+        });
+
+        dispatch(setBreadcrumbsList(arBreadcrumbs));
     }
 
     const columns = [
@@ -57,7 +94,12 @@ export default function CategoriesList() {
                         color="primary"
                         size="small"
                         style={{ marginRight: "2px" }}
-                        onClick={()=>{openCategoriesList(params.id)}}
+                        onClick={() => {
+                            const id = params.row.id;
+                            const name = params.row.name;
+                            openCategoriesList(id);
+                            dispatch(setBreadcrumbs({ id, name }));
+                        }}
                     >
                         Список
                     </Button>
@@ -100,6 +142,26 @@ export default function CategoriesList() {
                 }}
             >
                 <div style={{ height: 550, width: "72%" }}>
+                    <div
+                        role="presentation"
+
+                    >
+                        <Breadcrumbs aria-label="breadcrumb">
+                            {manager.breadcrumbs.map((category) => {
+                                return (
+                                    <Link
+                                        underline="hover"
+                                        color="inherit"
+                                        onClick={(event) => handleClick(event, category.id)}
+                                        href="/"
+                                    >
+                                        {category.name}
+                                    </Link>
+                                );
+                            })}
+                        </Breadcrumbs>
+                    </div>
+
                     <Grid container spacing={1}>
                         <Grid xs={12} item={true}>
                             <Button
@@ -115,7 +177,7 @@ export default function CategoriesList() {
                             </Button>
                         </Grid>
                         <Grid item={true}></Grid>
-                        {manager.chainParentIds.length > 0 && (
+                        {manager.breadcrumbs.length > 1 && (
                             <Button
                                 variant="contained"
                                 color="primary"

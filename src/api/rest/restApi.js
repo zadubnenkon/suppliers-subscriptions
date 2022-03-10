@@ -94,10 +94,8 @@ export default class RestApi {
     };
 
     deleteCategory = async (id) => {
-        console.log('dfsd');
         const result = await this.sendRequest("delete", "categories/?id=" + id);
         const categories = await this.getCategoryByField("parentId", id);
-        console.log(categories.data);
         if(categories.data.length > 0) {
             categories.data.forEach((category)=> {
                 this.sendRequest("delete", "categories/?id=" + category.id);

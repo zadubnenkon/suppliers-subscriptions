@@ -8,7 +8,9 @@ import {
     SET_SELECTED_CATEGORY,
     SET_PARENT_ID,
     SET_CHAIN_PARENT,
-    SET_CHAIN_LIST
+    SET_CHAIN_LIST,
+    SET_BREADCRUMBS_CATEGORIES,
+    SET_BREADCRUMBS_LIST
 } from "../reducers/categoriesReducer";
 
 export function setCategoriesList(list) {
@@ -49,4 +51,12 @@ export function setParentChain(id) {
 
 export function setChainList(list) {
     return {type: SET_CHAIN_LIST, payload: list};
+}
+
+export function setBreadcrumbs(category) {   
+    return {type: SET_BREADCRUMBS_CATEGORIES, payload: category};
+}
+
+export function setBreadcrumbsList(list) {
+    return {type: SET_BREADCRUMBS_LIST, payload: list};
 }

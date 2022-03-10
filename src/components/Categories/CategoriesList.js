@@ -149,7 +149,7 @@ export default function CategoriesList() {
                         <Breadcrumbs aria-label="breadcrumb">
                             {manager.breadcrumbs.map((category) => {
                                 return (
-                                    <Link
+                                    <Link key={category.id}
                                         underline="hover"
                                         color="inherit"
                                         onClick={(event) =>
@@ -198,7 +198,7 @@ export default function CategoriesList() {
                         rows={categoriesList}
                         columns={columns}
                         pageSize={8}
-                        rowsPerPageOptions={[5]}
+                        rowsPerPageOptions={[]}
                         checkboxSelection
                     />
                     <EditModal></EditModal>

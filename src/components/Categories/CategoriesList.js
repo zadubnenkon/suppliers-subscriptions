@@ -9,7 +9,6 @@ import Grid from "@mui/material/Grid";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Link from "@mui/material/Link";
 import { DataGrid } from "@mui/x-data-grid";
-import { DataGridPro } from "@mui/x-data-grid-pro";
 import { useSetModal } from "../../api/hooks/appHooks";
 import { useGetAuthManager } from "../../api/hooks/authHooks";
 import {

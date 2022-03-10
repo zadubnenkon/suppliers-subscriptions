@@ -1,7 +1,10 @@
 import React from "react";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import SearchIcon from "@mui/icons-material/Search";
 import EditModal from "../../components/Modals/EditModal";
+import IconButton from "@mui/material/IconButton";
 import Grid from "@mui/material/Grid";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Link from "@mui/material/Link";
@@ -86,18 +89,17 @@ export default function CategoriesList() {
         { field: "id", headerName: "ID", width: 70 },
         /*{ field: "parentId", headerName: "Родительский ID", width: 130 },*/
         { field: "code", headerName: "Код", width: 120 },
-        { field: "name", headerName: "Название", width: 975 },
+        { field: "name", headerName: "Название", width: 950 },
         {
             field: "action",
             headerName: "Удалить",
-            width: 300,
+            width: 150,
             renderCell: (params) => (
                 <strong>
-                    <Button
-                        variant="contained"
+                    <IconButton
                         color="primary"
                         size="small"
-                        style={{ marginRight: "2px" }}
+                        component="span"
                         onClick={() => {
                             const id = params.row.id;
                             const name = params.row.name;
@@ -105,32 +107,28 @@ export default function CategoriesList() {
                             dispatch(setBreadcrumbs({ id, name }));
                         }}
                     >
-                        Список
-                    </Button>
-                    <Button
-                        variant="contained"
+                        <SearchIcon />
+                    </IconButton>
+                    <IconButton
                         color="primary"
                         size="small"
-                        style={{ marginRight: "2px" }}
+                        component="span"
                         onClick={() => {
                             modal.set(true, params.id);
                         }}
                     >
-                        Изменить
-                    </Button>
-                    <Button
-                        variant="contained"
-                        style={{
-                            backgroundColor: "#ff007b",
-                        }}
-                        startIcon={<DeleteIcon />}
+                        <EditIcon />
+                    </IconButton>
+                    <IconButton
+                        color="primary"
                         size="small"
+                        component="span"
                         onClick={() => {
                             crud.remove(params.id);
                         }}
-                    >
-                        Удалить
-                    </Button>
+                    >        
+                        <DeleteIcon/>
+                    </IconButton>
                 </strong>
             ),
         },
@@ -150,7 +148,8 @@ export default function CategoriesList() {
                         <Breadcrumbs aria-label="breadcrumb">
                             {manager.breadcrumbs.map((category) => {
                                 return (
-                                    <Link key={category.id}
+                                    <Link
+                                        key={category.id}
                                         underline="hover"
                                         color="inherit"
                                         onClick={(event) =>
@@ -173,7 +172,7 @@ export default function CategoriesList() {
                                 size="small"
                                 style={{ marginBottom: "10px" }}
                                 onClick={() => {
-                                    if(manager.breadcrumbs.length === 1) {
+                                    if (manager.breadcrumbs.length === 1) {
                                         dispatch(setParentId(null));
                                     }
                                     modal.set(false);

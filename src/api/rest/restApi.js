@@ -9,7 +9,7 @@ export default class RestApi {
         this.statusUnAuthorized = 401;
 
         this.token = token;
-        this.url = process.env.NODE_ENV === 'production' ? `//api.${window.location.host}` : "https://ut-suppliers-subscriptions.herokuapp.com/";
+        this.url = process.env.NODE_ENV === 'production' ? `//api.${window.location.host}/` : "https://ut-suppliers-subscriptions.herokuapp.com/";
         this.headers = {
             "Content-Type": "application/json",
             "Access-Control-Allow-Origin": "*",

@@ -50,4 +50,4 @@ jobs:
             npm run build
             
       - name: Deploy
-        run: cd build && rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete . node@188.225.43.100:/home/node/frontend/
+        run: cd build && rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete . node@188.225.43.100:/home/node/suppliers/frontend/
